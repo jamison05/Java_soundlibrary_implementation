@@ -1,0 +1,174 @@
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import javax.sound.midi.ShortMessage;
+
+
+import beads.AudioContext;
+import beads.Bead;
+import beads.Buffer;
+import beads.Clock;
+import beads.Envelope;
+import beads.Function;
+import beads.Gain;
+import beads.WavePlayer;
+
+
+import beads.TapIn;
+import beads.TapOut;
+
+public class Ambient_jelly
+{
+	/*
+	 * The total number of synthesizers.
+	 * This is equivalent to the number
+	 * of voices in a synthesizer. This
+	 * patch can have up to this many
+	 * notes going at once.
+	 */
+	int count = 5;
+	
+	// the current synthesizer
+	int current =0;
+	
+	/*
+	 *  This array of synthesizers will allow
+	 *  the program to trigger multiple tones 
+	 *  that may overlap.
+	 */
+	RandomSynth[] synth;
+	
+	// the last key pressed on the midi keyboard
+	int lastKeyPressed = -1;
+	
+	// the time keeper
+	Clock beatClock;
+	
+	public static void main(String[] args)
+	{
+		Ambient_jelly synth = new 	Ambient_jelly();
+		synth.setup();
+	}
+	
+	// construct the synthesizer
+	public void setup()
+	{
+		AudioContext ac = new AudioContext();
+	
+		// initialize the array of synthesizers
+		synth = new RandomSynth[count];
+		for( int i = 0; i < count; i++ ) synth[i] = new RandomSynth(ac);
+
+		// create a class to listen to the Clock
+		class MessageListener extends Bead
+		{
+			@Override
+			public void messageReceived(Bead message)
+			{
+				if( Math.random() < 0.75 && lastKeyPressed != -1 )
+				{
+					// trigger a synth note
+					synth[current].triggerRandomTone(lastKeyPressed);
+					
+					// increment the current counter in a loop
+					current++;
+					if( current >= count ) current =0;
+				}
+			}
+		}
+		
+		// set up a clock to keep time
+		beatClock = new Clock(ac, 250.0f);
+		beatClock.setTicksPerBeat(1);
+		beatClock.addMessageListener(new MessageListener());
+		ac.out.addDependent(beatClock);
+		
+		
+		ac.start();
+		beatClock.start();
+	
+		
+		keyDown(65);
+	
+	}
+	
+	private float pitchToFrequency(int midiPitch)
+	{
+		/*
+		 *  MIDI pitch number to frequency conversion equation from
+		 *  http://newt.phys.unsw.edu.au/jw/notes.html
+		 */
+		double exponent = (midiPitch - 69.0) / 12.0;
+		return (float)(Math.pow(2, exponent) * 440.0f);
+	}
+	
+	public void keyDown(int midiPitch)
+	{
+		lastKeyPressed = midiPitch;
+	}
+	
+	public void keyUp(int midiPitch)
+	{
+		// nothing here
+	}
+	
+	/**
+	 * RandomSynth
+	 * 
+	 * This class encapsulates the randomized synthesizer
+	 * that will be used in this file. This class will
+	 * encapsulate a rather complex signal path which
+	 * will be duplicated in an array to enable 
+	 * overlapping notes.
+	 * 
+	 */
+	class RandomSynth
+	{
+		private WavePlayer toneGenerator;
+		private Envelope gainEnvelope;
+		private Gain gain;
+		
+		// objects for adding delay
+		private TapIn delayIn;
+		private TapOut delayOut;
+		private Gain delayGain;
+		
+		public RandomSynth(AudioContext ac)
+		{
+			// set up basic tone generation
+			this.toneGenerator = new WavePlayer(ac, 440.0f, Buffer.SINE);
+			this.gainEnvelope = new Envelope(ac, 0.0f);
+			this.gain = new Gain(ac, 1, gainEnvelope);
+			this.gain.addInput(this.toneGenerator);
+			
+			// set up the delay (note the signal path)
+			this.delayIn = new TapIn(ac, 500f);
+			this.delayIn.addInput(this.gain);
+			this.delayOut = new TapOut(ac, delayIn, 125.0f);
+			this.delayGain = new Gain(ac, 1, 0.5f);
+			this.delayGain.addInput(this.delayOut);
+			
+			
+			// connect the non-delayed signal to the master output
+			ac.out.addInput(this.gain);
+			
+			// connect the delay output to the master output
+			ac.out.addInput(this.delayGain);
+		}
+		
+		public void triggerRandomTone(int midiPitch)
+		{
+			// possibly transpose the pitch by several octaves
+			int transposition = (int)(12 * ((int)Math.floor(Math.random() * 2)) - 2);
+			int newMidiPitch = midiPitch + transposition;
+			
+			// set the frequency of the tone generator
+			this.toneGenerator.setFrequency(pitchToFrequency(newMidiPitch));
+			
+			// add segments to the envelope
+			this.gainEnvelope.addSegment(0.5f, 1000f);
+			this.gainEnvelope.addSegment(0.1f, 500f);
+			this.gainEnvelope.addSegment(0.0f, 1000.0f);
+		}
+	}
+}
+
