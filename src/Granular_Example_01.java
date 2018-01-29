@@ -2,9 +2,13 @@
 import net.beadsproject.beads.core.AudioContext;
 import net.beadsproject.beads.data.Buffer;
 import net.beadsproject.beads.data.Sample;
+import net.beadsproject.beads.data.SampleAudioFormat;
+import net.beadsproject.beads.data.audiofile.AudioFileType;
+import net.beadsproject.beads.data.audiofile.AudioFileWriter;
 import net.beadsproject.beads.ugens.Glide;
 import net.beadsproject.beads.ugens.GranularSamplePlayer;
 import net.beadsproject.beads.ugens.Panner;
+import net.beadsproject.beads.ugens.RecordToSample;
 import net.beadsproject.beads.ugens.SamplePlayer;
 import net.beadsproject.beads.ugens.Static;
 import net.beadsproject.beads.ugens.WavePlayer;
@@ -19,25 +23,48 @@ public class Granular_Example_01
 {
 	public static void main(String[] args)
 	{
-		float[][] file_holder1 = new float[10][500]; 
+		//Try 4 different sound modulations.  
+		float[][] file_holder1 = new float[15][500]; 
+		String filename  = "nit_1step2_sound_mod.dat";
+		file_holder1[1] = get_fuzzy_strings(filename);
+		filename = "nit_1step2_sound_mod.dat";
+		file_holder1[2] = get_fuzzy_strings(filename);
+		filename = "nit_1step3_sound_mod.dat";
+		file_holder1[3] = get_fuzzy_strings(filename);
+		filename = "nit_1step4_sound_mod.dat";
+		file_holder1[4] = get_fuzzy_strings(filename);	
+		filename = "nit_2step2_sound_mod.dat";
+		file_holder1[5] = get_fuzzy_strings(filename);
+		filename = "nit_2step3_sound_mod.dat";
+		file_holder1[6] = get_fuzzy_strings(filename);
+		filename = "nit_2step4_sound_mod.dat";
+		file_holder1[7] = get_fuzzy_strings(filename);
 		
 		
-		String filename  = "temp";
-	    String content = null;
-	    File file = new File(filename); //for ex foo.txt
-	    FileReader reader = null;
-	    try {
-	        reader = new FileReader(file);
-	        char[] chars = new char[(int) file.length()];
-	        reader.read(chars);
-	        content = new String(chars);
-	        reader.close();
-	    } catch (IOException e) {
-	        e.printStackTrace();
-	    } finally {
-	        if(reader !=null){reader.close();}
-	    }
-	  
+		filename = "nit_2step2_sound_mod.dat";
+		file_holder1[4] = get_fuzzy_strings(filename);	
+		
+		filename = "nit_2step3_sound_mod.dat";
+		file_holder1[5] = get_fuzzy_strings(filename);
+		
+		filename = "nit_2step4_sound_mod.dat";
+		file_holder1[6] = get_fuzzy_strings(filename);
+		
+		filename = "nit_3step2_sound_mod.dat";
+		file_holder1[7] = get_fuzzy_strings(filename);
+		
+		filename = "nit_3step3_sound_mod.dat";
+		file_holder1[8] = get_fuzzy_strings(filename);
+		
+		filename = "nit_3step4_sound_mod.dat";
+		file_holder1[9] = get_fuzzy_strings(filename);
+		
+		filename = "nit_4step2_sound_mod.dat";
+		file_holder1[10] = get_fuzzy_strings(filename);
+		
+		filename = "nit_4step3_sound_mod.dat";
+		file_holder1[11] = get_fuzzy_strings(filename);
+		
 		
 		// instantiate the AudioContext
 		AudioContext ac = new AudioContext();
@@ -46,7 +73,7 @@ public class Granular_Example_01
 		Sample sourceSample = null;
 		try
 		{
-			sourceSample = new Sample("FullerUp.wav");
+			sourceSample = new Sample("hollow_hit.wav");
 		}
 		catch(Exception e)
 		{
@@ -64,9 +91,12 @@ public class Granular_Example_01
 			System.exit(1);
 		}
 		
+
 		
+
+	
 		
-		
+
 		
 		// instantiate a GranularSamplePlayer
 		GranularSamplePlayer gsp = new GranularSamplePlayer(ac, sourceSample);
@@ -82,11 +112,11 @@ public class Granular_Example_01
 //		
 		WavePlayer me = new WavePlayer(ac,500f, Buffer.NOISE);
 		
-		Glide ms = new Glide(ac, 1f, 20f);
+		Glide ms = new Glide(ac, .8f, 20f);
 		
     	Glide randomnessValue = new Glide(ac, 80, 1);
 		Glide intervalValue = new Glide(ac, 2f, 1);
-		Glide grainSizeValue = new Glide(ac, 100, 1);
+		Glide grainSizeValue = new Glide(ac, 1000, 1);
 		Glide positionValue = new Glide(ac, 50000, 1);
 		Glide pitchValue = new Glide(ac, .5f, 1);
 
@@ -113,5 +143,88 @@ public class Granular_Example_01
 		
 		ac.start();
 
+		
+		
+
+		try{
+			SampleAudioFormat af = new SampleAudioFormat( 44100.0f, 16, 1, true, true); 
+
+			AudioFileWriter write_audio_rght = null ;
+			String filename2="";
+			filename2="C:\\Users\\deepj\\workspace\\HashMap_utilityAudio\\src\\kl9newlat.wav";
+			
+		
+			Sample outputSample = new Sample(100000, 2, 44100);
+			RecordToSample rts = new RecordToSample(ac, outputSample, RecordToSample.Mode.INFINITE); rts.addInput(ac.out); 
+			ac.out.addDependent(rts); 
+		
+		
+
+			//		Scanner in = new Scanner( System.in); System.out.println(" Press enter to save sound and end the program.");
+			//		in.nextLine();
+
+			long startTime = System.currentTimeMillis();
+			// Run some code;
+			long diff=0;
+			long stopTime=0;
+			while (diff < 4000){
+				stopTime = System.currentTimeMillis();
+				diff = stopTime - startTime;
+			}		
+		
+		
+			
+			rts.pause( true); rts.clip(); outputSample.write(filename2, AudioFileType.WAV); 
+			rts.kill();
+			System.out.println("Finished recording.");
+			}
+			catch (Exception e) { e.printStackTrace(); System.exit( 1);
+			System.exit(0);
+		}
+				
+		
+		
 	}
+
+public static float[] get_fuzzy_strings( String filename ){
+	
+	
+	
+    String content = null;
+    float [] fuzzy_value = new float[200];
+    File file = new File(filename); //for ex foo.txt
+    FileReader reader = null;
+    try {
+        reader = new FileReader(file);
+        char[] chars = new char[(int) file.length()];
+        
+        reader.read(chars);
+        content = new String(chars);
+        String[] content_ar= content.split(",");
+        int it=0;
+        for (String value: content_ar){
+        	fuzzy_value[it++] = Float.parseFloat(value);
+        } 
+        it=0;
+        reader.close();
+    } catch (IOException e) {
+        e.printStackTrace();
+    } finally {
+        if(reader !=null){try {
+			reader.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        	
+        }    
+    }
+  
+	return fuzzy_value;
+	
+	
+}
+
+
+
 }
