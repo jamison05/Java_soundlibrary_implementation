@@ -41,40 +41,74 @@ public class Granular_Example_01
 		file_holder1[6] = get_fuzzy_strings(filename);
 		filename = "nit_2step4_sound_mod.dat";
 		file_holder1[7] = get_fuzzy_strings(filename);
-		
-		
-		filename = "nit_2step2_sound_mod.dat";
-		file_holder1[4] = get_fuzzy_strings(filename);	
-		
-		filename = "nit_2step3_sound_mod.dat";
-		file_holder1[5] = get_fuzzy_strings(filename);
-		
 		filename = "nit_2step4_sound_mod.dat";
-		file_holder1[6] = get_fuzzy_strings(filename);
-		
 		filename = "nit_3step2_sound_mod.dat";
-		file_holder1[7] = get_fuzzy_strings(filename);
-		
-		filename = "nit_3step3_sound_mod.dat";
 		file_holder1[8] = get_fuzzy_strings(filename);
-		
-		filename = "nit_3step4_sound_mod.dat";
+		filename = "nit_3step3_sound_mod.dat";
 		file_holder1[9] = get_fuzzy_strings(filename);
-		
-		filename = "nit_4step2_sound_mod.dat";
+		filename = "nit_3step4_sound_mod.dat";
 		file_holder1[10] = get_fuzzy_strings(filename);
-		
-		filename = "nit_4step3_sound_mod.dat";
+		filename = "nit_4step2_sound_mod.dat";
 		file_holder1[11] = get_fuzzy_strings(filename);
+		filename = "nit_4step3_sound_mod.dat";
+		file_holder1[12] = get_fuzzy_strings(filename);
 		
 		
 		// instantiate the AudioContext and Audio Player
 		
-		Generate_audio  gen_audio = new Generate_audio();
-		gen_audio.generate_audio1(2, audio_modulation(1,1));  //This is where I select if from the code
-		// load the source sample from a file
+		
+		Generate_audio  gen_audio =new Generate_audio();;
+		
+				AudioContext ac = new AudioContext(200000);
+		int j = 10;	
+				for (int seq_iter = 1; seq_iter<=3; seq_iter++){
+					gen_audio =new Generate_audio();;
+					gen_audio.generate_audio1(j, audio_modulation(1,seq_iter),seq_iter, ac);  //This is where I select if from the code
+					//gen_audio = null;
+					// load the source sample from a file
+					ac.stop();
+					ac.reset();
+				}
 
+				for (int seq_iter = 4; seq_iter<=6; seq_iter++){
+					gen_audio =new Generate_audio();;
+					gen_audio.generate_audio1(j, audio_modulation(2,seq_iter),seq_iter,ac);  //This is where I select if from the code
+					// load the source sample from a file
+					//gen_audio = null;
+				
+					ac.stop();
+					ac.reset();
+				}
+				
+				for (int seq_iter = 7; seq_iter<=9; seq_iter++){
+					gen_audio =new Generate_audio();;
+					gen_audio.generate_audio1(j, audio_modulation(2,seq_iter),seq_iter,ac);  //This is where I select if from the code
+					// load the source sample from a file
+					//gen_audio = null;
+				
+					ac.stop();
+					ac.reset();
+				}
+				
+				for (int seq_iter = 10; seq_iter<=12; seq_iter++){
+					gen_audio =new Generate_audio();;
+					gen_audio.generate_audio1(j, audio_modulation(2,seq_iter),seq_iter,ac);  //This is where I select if from the code
+					// load the source sample from a file
+					//gen_audio = null;
+				
+					ac.stop();
+					ac.reset();
+				}
+				
+				ac.stop();
+				ac.reset();
+				ac = null;
+				ac = new AudioContext(200000);
+	
+			
+			
 			}
+			
 
 public static float[] get_fuzzy_strings( String filename ){
 	
@@ -119,11 +153,11 @@ public static float[] get_fuzzy_strings( String filename ){
 	static String audio_modulation (int mode_1, int step){
 		
 			//String var1 = "C:\\Users\\deepj\\workspace\\HashMap_utilityAudio\\src\\kl9newlat.wav";
-			String var1_start = "C:\\Users\\deepj\\OneDrive\\Cajun_taste\\Music_Renderings\\Audio_1O";
+			String var1_start = "C:\\Users\\deepj\\OneDrive\\Cajun_taste\\Music_Renderings\\Audio_1O\\set10";
 			String temp_var1, temp_var2, temp_var3, concat; 
 			temp_var1 ="\\aud";
 			temp_var2 = "_phase";
-			concat = var1_start + temp_var1 + mode_1 + temp_var2 + step;
+			concat = var1_start + temp_var1 + mode_1 + temp_var2 + step +"A0.wav"; 
 			return concat;
 			
 		}
