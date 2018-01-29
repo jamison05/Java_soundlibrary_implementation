@@ -12,43 +12,44 @@ import net.beadsproject.beads.ugens.SamplePlayer;
 import net.beadsproject.beads.ugens.Static;
 import net.beadsproject.beads.ugens.WavePlayer;
 
-public class generate_audio {
+public class Generate_audio extends Granular_Example_01{
 	
 	
 	AudioContext ac = new AudioContext();
 	
 	
-	public void generate_audio (int audio_input){
+	public void generate_audio1 (int audio_input, String audio_save_file){
 		
-		
-		
+
+		float xuee = 0;
+		xuee= file_holder1[1][1];
 		switch  (audio_input){
 		
 			case 1:
 				set_Source("bassdruum.wav");
+				break;
 			case 2:
-				set_Source("small_hit3.wav");
+				set_Source("hollow_hit.wav");
+				break;
 			case 3:
-				set_Source("small_hit2.wav");
+				set_Source("hollow_hit_2.wav");
+				break;
 			case 4:
 				set_Source("crash.wav");
+				break;
 			case 5:
 				set_Source("congo1.wav");
+				break;
 			case 6:
 				set_Source("congo2.wav");
+				break;
 			case 7:
-				set_Source("bassdruum.wav");
+				set_Source("bassdrum.wav");
+				break;
 			case 8:	
-				set_Source("hollow_hit2.wav");
+				set_Source("hollow_hit_2.wav");
+				break;
 		}
-		
-		
-		
-		
-		
-
-
-		
 		// instantiate a GranularSamplePlayer
 		GranularSamplePlayer gsp = new GranularSamplePlayer(ac, sourceSample);
 		
@@ -64,7 +65,6 @@ public class generate_audio {
 		WavePlayer me = new WavePlayer(ac,500f, Buffer.NOISE);
 		
 		Glide ms = new Glide(ac, .8f, 20f);
-		
     	Glide randomnessValue = new Glide(ac, 80, 1);
 		Glide intervalValue = new Glide(ac, 2f, 1);
 		Glide grainSizeValue = new Glide(ac, 1000, 1);
@@ -76,30 +76,20 @@ public class generate_audio {
 		Panner panner;
 		
 		WavePlayer panLFO = new WavePlayer(ac,1f, Buffer.SINE);//Do not set the frequency below 1. 
-		//Do not set the frequency below 1. 
-//     	 gsp.setRandomness(randomnessValue);
-//		 gsp.setGrainInterval(intervalValue);
-//		 gsp.setGrainSize(grainSizeValue);
-//		 gsp.setPosition(positionValue);
-//		 gsp.setPitch(pitchValue);
-
 		panner = new Panner(ac, panLFO);
 		panner.addInput(gsp);
-		
-		// connect gsp to ac
-		ac.out.addInput(panner);
-		
+		ac.out.addInput(panner);		
 		// begin audio processing
-		
-		
 		ac.start();
+		//This is important after starting the audio. 
+		save_soundfile(audio_save_file);
 	}
 	
 	
 	
+	Sample outputSample = new Sample(100000, 2, 44100);
 	
-	
-	public void save_soundfile (){
+	public void save_soundfile (String audio_string){
 		
 
 		try{
@@ -107,10 +97,10 @@ public class generate_audio {
 
 			AudioFileWriter write_audio_rght = null ;
 			String filename2="";
-			filename2="C:\\Users\\deepj\\workspace\\HashMap_utilityAudio\\src\\kl9newlat.wav";
+			//filename2=;
 			
 		
-			Sample outputSample = new Sample(100000, 2, 44100);
+			
 			RecordToSample rts = new RecordToSample(ac, outputSample, RecordToSample.Mode.INFINITE); rts.addInput(ac.out); 
 			ac.out.addDependent(rts); 
 		
@@ -127,20 +117,17 @@ public class generate_audio {
 				stopTime = System.currentTimeMillis();
 				diff = stopTime - startTime;
 			}		
-		
-		
-			
-			rts.pause( true); rts.clip(); outputSample.write(filename2, AudioFileType.WAV); 
-			rts.kill();
-			System.out.println("Finished recording.");
+				rts.pause( true); rts.clip(); outputSample.write(audio_string, AudioFileType.WAV); 
+				rts.kill();
+				System.out.println("Finished recording.");
 			}
 			catch (Exception e) { e.printStackTrace(); System.exit( 1);
-			System.exit(0);
+				System.exit(0);
 		}
 		stop_audio();
 	}
-	Sample sourceSample = null;
-	public void set_Source (String audio_filein){
+		Sample sourceSample = null;
+		public void set_Source (String audio_filein){
 		
 		try
 		{
@@ -154,7 +141,17 @@ public class generate_audio {
 		}
 		
 	}
-	public void stop_audio(){
+		public void stop_audio(){
 			ac.stop();
 		}
+
+
+
+
+
+
+
+
+
+
 }
